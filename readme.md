@@ -1,6 +1,6 @@
 ![AnimDL Cover](https://i.imgur.com/nNXSZi6.png)
 
-<h1><p align="center"> AnimDL [Install <code>v1.2.0, 03018e1</code>]</h1>
+<h1><p align="center"> AnimDL [Install <code>v1.2.1, 03018e1</code>]</h1>
 
 <p align="center">Official package of <a href="https://github.com/justfoolingaround/animdl"><strong>justfoolingaround/animdl</strong></a> for incredibly easy pip installation.</p>
 
