@@ -26,3 +26,6 @@ if executable:
 @click.group(commands=commands)
 def __animdl_cli__():
     pass
+
+if __name__ == '__main__':
+    __animdl_cli__()
