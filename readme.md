@@ -10,6 +10,11 @@ This package is only for stable releases and hence this package would not be upd
 
 <h3> Installation </h3>
 
+### Windows:
 ```
-py -m pip install git+https://github.com/justfoolingaround/animdl-install
+python -m pip install git+https://github.com/justfoolingaround/animdl-install
+```
+### Linux/MacOs :
+```
+python3 -m pip install git+https://github.com/justfoolingaround/animdl-install
 ```
