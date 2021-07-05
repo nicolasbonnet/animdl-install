@@ -31,14 +31,21 @@ DEFAULT_CONFIG = {
     'preferred_quality': 1080,
     'default_player': 'mpv',
     'players': {
-        'mpv': 'mpv.exe',
-        'vlc': 'C:\\Program Files\\VideoLAN\\VLC\\vlc.exe'    
+        'mpv': {
+            'executable': 'mpv',
+            'opts': [],
+            },
+        'vlc': {
+            'executable': 'C:\\Program Files\\VideoLAN\\VLC\\vlc.exe',
+            'opts': [],
+            },
     },
     'schedule': {
         'site_url': 'https://www.livechart.me/',
         'date_format': '%b. %d, %A',
         'time_format': '%X'
-    }
+    },
+    'download_auto_retry': 300,
 }
 
 CONFIG = DEFAULT_CONFIG
@@ -71,3 +78,5 @@ TIME_FORMAT = CONFIG.get('schedule', {}).get('time_format')
 
 SESSION_FILE = CONFIG.get('session_file')
 DEFAULT_PROVIDER = CONFIG.get('default_provider')
+
+AUTO_RETRY = CONFIG.get('download_auto_retry', 300) / 1000
