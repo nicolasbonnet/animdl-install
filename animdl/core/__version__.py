@@ -1,2 +1,2 @@
-__core__ = "1.3.2"
-__git_version__ = "d58210a"
+__core__ = "1.3.3"
+__git_version__ = "78b080e" 
