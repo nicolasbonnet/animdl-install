@@ -21,7 +21,6 @@ DEFAULT_CONFIG = {
         '4anime': 'https://4anime.to/',
         '9anime': 'https://9anime.to/',
         'anime1': 'https://www.anime1.com/',
-        'animefreak': 'https://animefreak.tv/',
         'animeout': 'https://animeout.xyz/',
         'animepahe': 'https://animepahe.com/',
         'animixplay': 'https://animixplay.to/',
@@ -41,7 +40,7 @@ DEFAULT_CONFIG = {
             },
     },
     'schedule': {
-        'site_url': 'https://www.livechart.me/',
+        'site_url': 'https://graphql.anilist.co/',
         'date_format': '%b. %d, %A',
         'time_format': '%X'
     },
@@ -59,7 +58,6 @@ SITE_URLS = CONFIG.get('site_urls', {})
 FOURANIME  = SITE_URLS.get('4anime')
 NINEANIME  = SITE_URLS.get('9anime')
 ANIME1     = SITE_URLS.get('anime1')
-ANIMEFREAK = SITE_URLS.get('animefreak')
 ANIMEOUT   = SITE_URLS.get('animeout')
 ANIMEPAHE  = SITE_URLS.get('animepahe')
 ANIMIXPLAY = SITE_URLS.get('animixplay')
@@ -71,7 +69,7 @@ QUALITY    = CONFIG.get('preferred_quality')
 DEFAULT_PLAYER = CONFIG.get('default_player')
 PLAYERS = CONFIG.get('players')
 
-LIVECHART   = CONFIG.get('schedule', {}).get('site_url')
+ANICHART = CONFIG.get('schedule', {}).get('site_url')
 
 DATE_FORMAT = CONFIG.get('schedule', {}).get('date_format')
 TIME_FORMAT = CONFIG.get('schedule', {}).get('time_format')
