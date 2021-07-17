@@ -6,8 +6,8 @@ import requests
 from tqdm import tqdm
 
 from ...codebase import (Associator, aed, get_filler_list, hls_download,
-                         idmanlib, sanitize_filename, url_download)
-from ...config import SESSION_FILE
+                         sanitize_filename, url_download)
+from ...config import QUALITY, SESSION_FILE
 from ..helpers import *
 
 
@@ -16,6 +16,7 @@ from ..helpers import *
 @click.option('-a', '--anonymous', is_flag=True, default=False, help='Avoid writing session files for this session.')
 @click.option('-s', '--start', help="An integer that determines where to begin the downloading from.", required=False, default=0, show_default=False, type=int)
 @click.option('-e', '--end', help="A integer that determines where to end the downloading at.", required=False, default=0, show_default=False, type=int)
+@click.option('-q', '--quality', help='Select a preferred quality if available.', required=False, default=QUALITY, type=int)
 @click.option('-t', '--title', help="Optional title for the anime if the query is a direct URL. This will be used as the download folder name.", required=False, default='', show_default=False)
 @click.option('-fl', '--filler-list', help="Filler list associated with the content enqueued for the download.", required=False, default='', show_default=False)
 @click.option('-o', '--offset', help="Offset (If the E1 of your anime is marked as E27 on AnimeFillerList, this value should be 26).", required=False, default=0, show_default=False)
@@ -27,7 +28,7 @@ from ..helpers import *
 @click.option('-i', '--index', required=False, default=0, show_default=False, type=int, help="Index for the auto flag.")
 @click.option('--quiet', help='A flag to silence all the announcements.', is_flag=True, flag_value=True)
 @bannerify
-def animdl_download(query, anonymous, start, end, title, filler_list, offset, filler, mixed, canon, idm, auto, index, quiet):
+def animdl_download(query, anonymous, start, end, quality, title, filler_list, offset, filler, mixed, canon, idm, auto, index, quiet):
     """
     Download call.
     """
@@ -82,22 +83,38 @@ def animdl_download(query, anonymous, start, end, title, filler_list, offset, fi
             ts("Failed to download '%s' due to lack of stream urls." % content_title)
             continue
         
-        content = stream_urls[0]
-        
+        available_qualities = [*filter_quality(stream_urls, quality)]
+        if not available_qualities:
+            content = stream_urls[0]
+            q = content.get('quality')
+            if q not in ['multi']:
+                ts("Can't find the quality '{}' for {!r}; falling back to {}.".format(quality, content_title, q if q != 'unknown' else 'an unknown quality'))
+        else:
+            content = available_qualities.pop(0)
+
+        q = content.get('quality')
+
+        if q not in ['unknown', 'multi'] and int(q or 0) != quality:
+            ts("Fell back to quality '{}' due to unavailability of '{}'.".format(q, quality))
+
         extension = aed(content.get('stream_url'))
-        file_path = Path('%s.%s' % (sanitize_filename(content_title), aed(content.get('stream_url'))))
+        if extension in ['php', 'html']:
+            extension = 'mp4'
+        file_path = Path('%s.%s' % (sanitize_filename(content_title), extension or 'mp4'))
         download_path = base / file_path
                 
         if extension in ['m3u', 'm3u8']:
-            hls_download(stream_urls, base / ("%s.ts" % sanitize_filename(content_title)), content_title)
+            hls_download(stream_urls, base / ("%s.ts" % sanitize_filename(content_title)), content_title, preferred_quality=quality)
             continue
         
-        if idmanlib.supported() and idm:
-            if download_path.exists():
-                download_path.chmod(0x1ff)
-                os.remove(download_path.as_posix())
-            ts("Downloading with Internet Download Manager [%02d/%s]" % (c, end_str))
-            idmanlib.wait_until_download(content.get('stream_url'), headers=content.get('headers', {}), filename=file_path, download_folder=base.absolute())
-            continue
+        if idm:
+            from ...codebase.downloader import idmanlib
+            if idmanlib.supported():
+                if download_path.exists():
+                    download_path.chmod(0x1ff)
+                    os.remove(download_path.as_posix())
+                ts("Downloading with Internet Download Manager [%02d/%s]" % (c, end_str))
+                idmanlib.wait_until_download(content.get('stream_url'), headers=content.get('headers', {}), filename=file_path, download_folder=base.absolute())
+                continue
         
         url_download(content.get('stream_url'), download_path, lambda r: tqdm(desc=content_title, total=r, unit='B', unit_scale=True, unit_divisor=1024), content.get('headers', {}))
